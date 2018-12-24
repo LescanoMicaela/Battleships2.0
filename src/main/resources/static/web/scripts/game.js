@@ -9,7 +9,8 @@ getData(makeUrl()).
 then(data => data.json()).
 then(response => {console.log(response);
     createGrid()
-    showShipsLocation(response)})
+    showShipsLocation(response)
+    printPlayerVSoponent(response)})
 // .catch(error => console.error(error));
 
 
@@ -44,8 +45,14 @@ function createGrid(){
         }
     }
 }
+
+function printPlayerVSoponent(data){
+    const h1 = document.getElementById("playersInfo");
+    h1.textContent = getPlayer(data) + " (you)  vs  " + getOponent(data) + " (oponent)";
+}
+
 function getPlayer(data){
-    for (let i = 0; i < data.gamePlayers; i++){
+    for (let i = 0; i < data.gamePlayers.length; i++){
         if(data.id == data.gamePlayers[i].id){
             return data.gamePlayers[i].player.email;
         }
@@ -53,7 +60,7 @@ function getPlayer(data){
 }
 function getOponent(data){
     if ( data.gamePlayers.length > 1){
-        for (let i = 0; i < data.gamePlayers; i++){
+        for (let i = 0; i < data.gamePlayers.length; i++){
             if(data.id != data.gamePlayers[i].id){
                 return data.gamePlayers[i].player.email;
             }
