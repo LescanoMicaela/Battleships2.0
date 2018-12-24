@@ -52,6 +52,7 @@ public class Game {
         return this.id;
     }
 
+
     @JsonIgnore
     public List<Player> getPlayers(){
         return this.gamePlayers.stream().map(gp->gp.getPlayer()).collect(Collectors.toList());

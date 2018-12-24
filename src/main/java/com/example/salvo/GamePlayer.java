@@ -5,6 +5,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 public class GamePlayer {
@@ -23,6 +25,9 @@ public class GamePlayer {
     @ManyToOne(fetch= FetchType.EAGER)
     @JoinColumn(name="game_id")
     private Game game;
+
+    @OneToMany(mappedBy = "gamePlayer" , fetch = FetchType.EAGER)
+    Set<Ship> ships = new LinkedHashSet<>();
 
 
     public GamePlayer(){
@@ -66,7 +71,16 @@ public class GamePlayer {
         this.date = date;
     }
 
+    public Set<Ship> getShips() {
+        return ships;
+    }
 
+    public void setShips(Set<Ship> ships) {
+        this.ships = ships;
+    }
 
-
+    public void addShip(Ship ship){
+        ship.setGamePlayer(this);
+        this.ships.add(ship);
+    }
 }

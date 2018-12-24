@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 // A dispatcher is code that examines the URL sent by a client and decides what method of what class to pass the URL.
 //Spring creates a dispatcher, using patterns collected from the classes you define and annotations you write.
 // a RestRepository, such as Person, creates a large number of URL patterns, such as /persons, /persons/{id}, /persons/search, and so on
@@ -28,14 +30,37 @@ public class SalvoController {
     @Autowired GameRepository gameRepository;
 
     @RequestMapping("/games")
-    public Map<String,Object> getGames(){
+    public List<Object> getGames(){
         Map<String,Object> gamesDTO = new HashMap<>();
         //repo.findAll() return a list of all instances in this repo
-        //this method returns a list of games existing in the GameRepo
-//        return gameRepository.findAll()
-//                .stream()
-//                .map(g -> g.getId()).collect(Collectors.toList());
-        return gamesDTO;
+        return gameRepository.findAll()
+                .stream()
+                .map(g -> makeGameDTO(g)).collect(toList());
+
+    }
+
+    public Map<String,Object> makeGameDTO(Game game){
+        Map<String,Object> gameDTO = new HashMap<>();
+        gameDTO.put("id", game.getId());
+        gameDTO.put("created", game.getCreationDate());
+        gameDTO.put("gameplayers",game.getGamePlayers().stream()
+                                        .map(gp -> makeGamePlayerDTO(gp))
+                                        .collect(toList()));
+        return gameDTO;
+    }
+
+    public Map<String,Object> makePlayerDTO(Player player){
+        Map<String,Object> playerDTO = new HashMap<>();
+        playerDTO.put("id", player.getId());
+        playerDTO.put("email", player.getUserName());
+        return playerDTO;
+    }
+
+    public Map<String,Object> makeGamePlayerDTO(GamePlayer gamePlayer){
+        Map<String,Object> gamePlayerDTO = new HashMap<>();
+        gamePlayerDTO.put("id",gamePlayer.getId());
+        gamePlayerDTO.put("player",makePlayerDTO(gamePlayer.getPlayer()));
+        return gamePlayerDTO;
     }
 
 }
