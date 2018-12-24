@@ -2,9 +2,11 @@ package com.example.salvo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,10 +29,13 @@ public class SalvoController {
     //@Autowired tells Spring to automatically create an instance of GameRepository and store it in the instance variable gameRepository
     // This technique is called dependency injection.
     // We let the framework create and "inject" the objects we need, rather than writing a call to the new operator
-    @Autowired GameRepository gameRepository;
+    @Autowired
+    GameRepository gameRepository;
+    @Autowired
+    GamePlayerRepository gamePlayerRepository;
 
     @RequestMapping("/games")
-    public List<Object> getGames(){
+    public List<Object> games_view(){
         Map<String,Object> gamesDTO = new HashMap<>();
         //repo.findAll() return a list of all instances in this repo
         return gameRepository.findAll()
@@ -62,5 +67,16 @@ public class SalvoController {
         gamePlayerDTO.put("player",makePlayerDTO(gamePlayer.getPlayer()));
         return gamePlayerDTO;
     }
+
+    //The @RequestParam annotation says that the URL will include ?id=value
+    @RequestMapping("/game/{id}")
+    public Map<String, Object> game_view(@RequestParam("id") Long id,GamePlayer gamePlayer){
+        GamePlayer gamePlyer = gamePlayerRepository.findOne(id);
+        Map<String,Object> dto = new LinkedHashMap<>();
+
+
+        return dto;
+    }
+
 
 }
