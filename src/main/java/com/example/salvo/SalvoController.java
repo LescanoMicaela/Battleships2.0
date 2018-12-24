@@ -1,14 +1,13 @@
 package com.example.salvo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.LinkedCaseInsensitiveMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -68,13 +67,29 @@ public class SalvoController {
         return gamePlayerDTO;
     }
 
+    //This method will create a JSON to create a game view.
     //The @RequestParam annotation says that the URL will include ?id=value
-    @RequestMapping("/game/{id}")
-    public Map<String, Object> game_view(@RequestParam("id") Long id,GamePlayer gamePlayer){
-        GamePlayer gamePlyer = gamePlayerRepository.findOne(id);
+    @RequestMapping("/game_view/{id}")
+    public Map<String, Object> game_view(@PathVariable Long id){
+        GamePlayer gamePlayer = gamePlayerRepository.findOne(id);
+        Game game = gamePlayer.getGame();
+        Set<GamePlayer> gamePlayerSet = game.getGamePlayers();
         Map<String,Object> dto = new LinkedHashMap<>();
+        dto.put("id",gamePlayer.getId());
+        dto.put("created",gamePlayer.getDate());
+        dto.put("gamePlayers", gamePlayerSet.stream()
+                                            .map( gp -> makeGamePlayerDTO(gp))
+                                            .collect(toList()));
+        dto.put("ships",gamePlayer.getShips().stream()
+                                            .map(s-> makeShipDTO(s))
+                                            .collect(toList()));
+        return dto;
+    }
 
-
+    public Map<String,Object> makeShipDTO(Ship ship){
+        Map<String,Object> dto = new LinkedCaseInsensitiveMap<>();
+        dto.put("type", ship.getShipType());
+        dto.put("location",ship.getShipLocation());
         return dto;
     }
 
