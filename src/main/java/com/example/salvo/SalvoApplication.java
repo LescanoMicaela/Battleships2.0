@@ -22,7 +22,9 @@ public class SalvoApplication {
 	// This is a way to get beans without annotating them as components.
 
 	@Bean
-	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository, GamePlayerRepository gpRepository,ShipRepository shipRepository) {
+	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository,
+									  GamePlayerRepository gpRepository,ShipRepository shipRepository,
+									  SalvoRepository salvoRepository,ScoreRepository scoreRepository) {
 		return (args) -> {
 			Player ObiWan = new Player("obi_wan@gmail.com");
 			Player Leia = new Player("leia@gmail.com");
@@ -82,7 +84,7 @@ public class SalvoApplication {
 			List<String> location2 = Arrays.asList("E1","F1","G1");
 			List<String> location3 = Arrays.asList("A3","A4","A5","A6");
 			List<String> location4 = Arrays.asList("J3","J4");
-			List<String> location5 = Arrays.asList("C5","C26");
+			List<String> location5 = Arrays.asList("C5","C6");
 
 
 			List<String> location6 = Arrays.asList("F1","F2");
@@ -117,6 +119,32 @@ public class SalvoApplication {
 			Ship ship7 = new Ship("Submarine",gp1,location2);
 			gp4.addShip(ship7);
 			shipRepository.save(ship7);
+
+
+			Salvo salvo0 = new Salvo(gp1, 1,location4);
+			Salvo salvo1 = new Salvo(gp1, 2,location1);
+			Salvo salvo6 = new Salvo(gp1, 3,location9);
+			Salvo salvo2 = new Salvo(gp2, 1,location6);
+			Salvo salvo3 = new Salvo(gp2, 2,location9);
+			Salvo salvo4 = new Salvo(gp3, 1,location5);
+			Salvo salvo5 = new Salvo(gp4, 1,location9);
+
+			salvoRepository.save(salvo0);
+			salvoRepository.save(salvo1);
+			salvoRepository.save(salvo2);
+			salvoRepository.save(salvo3);
+			salvoRepository.save(salvo4);
+			salvoRepository.save(salvo5);
+			salvoRepository.save(salvo6);
+
+			Score score1 = new Score(1.0,g1,ObiWan);
+			Score score2 = new Score(0.0,g1,Luke);
+			scoreRepository.save(score1);
+			scoreRepository.save(score2);
+			Score score3 = new Score(0.5,g2,Leia);
+			Score score4 = new Score(0.5,g2,Luke);
+			scoreRepository.save(score3);
+			scoreRepository.save(score4);
 
 
 		};

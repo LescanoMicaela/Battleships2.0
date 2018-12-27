@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -28,6 +29,9 @@ public class GamePlayer {
 
     @OneToMany(mappedBy = "gamePlayer" , fetch = FetchType.EAGER)
     Set<Ship> ships = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy="gamePlayer", fetch = FetchType.EAGER)
+    Set<Salvo> salvoes = new HashSet<>();
 
 
     public GamePlayer(){
@@ -71,6 +75,7 @@ public class GamePlayer {
         this.date = date;
     }
 
+    @JsonIgnore
     public Set<Ship> getShips() {
         return ships;
     }
@@ -82,5 +87,28 @@ public class GamePlayer {
     public void addShip(Ship ship){
         ship.setGamePlayer(this);
         this.ships.add(ship);
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    @JsonIgnore
+    public Set<Salvo> getSalvoes() {
+        return salvoes;
+    }
+
+    public void setSalvoes(Set<Salvo> salvoes) {
+        this.salvoes = salvoes;
+    }
+
+//    public Score getScore(){
+//        return this.getPlayer().getScores().stream().filter(s -> s.getGame().equals(this.getGame())).findFirst().orElse(null);
+//
+//    }
+
+    @JsonIgnore
+    public Score getScore() {
+       return this.player.getScore(this.game);
     }
 }

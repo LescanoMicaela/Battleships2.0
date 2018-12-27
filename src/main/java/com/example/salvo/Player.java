@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +27,9 @@ import static java.util.stream.Collectors.toList;
 
         @OneToMany(mappedBy = "player", fetch=FetchType.EAGER)
         Set<GamePlayer> gamePlayers = new HashSet<>();
+
+        @OneToMany(mappedBy="player", fetch = FetchType.EAGER)
+        Set<Score> scores = new LinkedHashSet<>();
 
         //That's what JPA will call to create new instances
         public Player() { }
@@ -51,8 +55,20 @@ import static java.util.stream.Collectors.toList;
             gamePlayers.add(gamePlayer);
         }
 
+    public void setId(long id) {
+        this.id = id;
+    }
 
-        public List<Game> getGames(){
+    @JsonIgnore
+    public Set<Score> getScores() {
+        return scores;
+    }
+
+    public void setScores(Set<Score> scores) {
+        this.scores = scores;
+    }
+
+    public List<Game> getGames(){
             return gamePlayers.stream().map( gp -> gp.getGame()).collect(toList());
         }
 
@@ -63,6 +79,10 @@ import static java.util.stream.Collectors.toList;
 
         public void setGamePlayers(Set<GamePlayer> gamePlayers) {
         this.gamePlayers = gamePlayers;
+        }
+
+        public Score getScore(Game game){
+            return this.getScores().stream().filter(s -> s.getGame().equals(game)).findFirst().orElse(null);
         }
     }
 

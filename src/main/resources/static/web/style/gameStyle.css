@@ -17,3 +17,12 @@ table{
 .ship{
     background-color: darkgreen;
 }
+
+.salvo{
+    background-color: gray;
+}
+
+.hit{
+    background-color: orange;
+
+}
