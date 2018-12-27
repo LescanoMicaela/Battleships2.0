@@ -48,21 +48,8 @@ function createElement(el,parentEl){
 
 function createLeaderBoard(leaderboard){
     let table = createElement("table",divLeaderboard);
-    let thead = createElement("thead",table);
-    let header = createElement("tr",thead);
-
-    let name = createElement("th",header);
-    name.textContent = "Player";
-    let win = createElement("th",header);
-    win.textContent = "Win";
-    let lose = createElement("th",header);
-    lose.textContent = "Lose";
-    let tie = createElement("th",header);
-    tie.textContent = "Tie";
-    let total = createElement("th",header);
-    total.textContent = "total";
+    createLeaderBoardHeader(table);
     let tbody = createElement("tbody",table);
-
     leaderboard.forEach(function createRow(player){
         // console.log(player.scores)
         if(Object.keys(player.scores).length === 0 && (player.scores).constructor === Object){
@@ -87,4 +74,19 @@ function createLeaderboardColumn(player,status,row){
     }else{
         td.textContent = "/";
     }
+}
+
+function createLeaderBoardHeader(table){
+    let thead = createElement("thead",table);
+    let header = createElement("tr",thead);
+    let name = createElement("th",header);
+    name.textContent = "Player";
+    let win = createElement("th",header);
+    win.textContent = "Win";
+    let lose = createElement("th",header);
+    lose.textContent = "Lose";
+    let tie = createElement("th",header);
+    tie.textContent = "Tie";
+    let total = createElement("th",header);
+    total.textContent = "total";
 }
