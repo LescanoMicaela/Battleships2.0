@@ -92,17 +92,19 @@ public class SalvoController {
 
 
 
-    public Map<String,Integer> countPlayerScores(Set<Score> scores){
-        Map<String,Integer> counter = new HashMap<String, Integer>();
+    public Map<String,Double> countPlayerScores(Set<Score> scores){
+        Map<String,Double> counter = new LinkedHashMap<>();
+        Double total = 0.0;
         for (Score score : scores) {
-
+            total+= score.getScore();
             if (counter.containsKey(getScoreStatus(score.getScore()))) {
-                Integer value = counter.get(getScoreStatus(score.getScore()));
+                Double value = counter.get(getScoreStatus(score.getScore()));
                 value++;
                 counter.put(getScoreStatus(score.getScore()), value);
             } else {
-                counter.put(getScoreStatus(score.getScore()), 1);
+                counter.put(getScoreStatus(score.getScore()), 1.0);
             }
+            counter.put("total", total);
         }
         return counter;
     }
