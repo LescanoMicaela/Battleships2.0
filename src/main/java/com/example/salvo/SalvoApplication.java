@@ -205,7 +205,7 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 //				return new User(player.getUserName(), player.getPassword(),
 //						AuthorityUtils.createAuthorityList("USER"));
 				///---realse 2.1.1 WITH PASSWORD ENCODER-----
-				User.withUsername(player.getUserName()).password("{noop}"+player.getPassword()).roles("USER").build();
+				return User.withUsername(player.getUserName()).password("{noop}"+player.getPassword()).roles("USER").build();
 
 			} else {
 				throw new UsernameNotFoundException("Unknown user: " + inputName);
