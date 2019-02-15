@@ -224,13 +224,14 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 				.antMatchers("/web/games.html").permitAll()
-				.antMatchers("web/scripts/games.js").permitAll()
-				.antMatchers("web/style/gameStyle.css").permitAll()
+				.antMatchers("/web/scripts/**").permitAll()
+				.antMatchers("/web/style/**").permitAll()
+				.antMatchers("/web/images/**").permitAll()
 				.antMatchers("/api/games").permitAll()
+				.antMatchers("/api/players").permitAll()
 				.antMatchers("/rest/**").denyAll()
-				.antMatchers("/**").hasAuthority("USER")
-
-				// sames as : hasAuthority("ROLE_USER")
+//				.antMatchers("/**").hasAuthority("USER")
+				 .antMatchers("/**").hasAuthority("ROLE_USER")
 				.and()
 				.formLogin()
 				.usernameParameter("userName")
@@ -240,11 +241,8 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.logout().logoutUrl("/api/logout");
 
 
-
-
 		// turn off checking for CSRF tokens
 		http.csrf().disable();
-
 
 		//form-based login configured to avoid sending any HTML to the browser.
 		// settings that need to change are:

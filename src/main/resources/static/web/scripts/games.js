@@ -90,3 +90,9 @@ function createLeaderBoardHeader(table){
     let total = createElement("th",header);
     total.textContent = "total";
 }
+
+const modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+modal.onclick = modal.style.display = "none";
+

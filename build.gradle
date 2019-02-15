@@ -1,7 +1,7 @@
 buildscript {
 	ext {
-//		springBootVersion = '2.1.1.RELEASE'
-		springBootVersion = '1.5.10.RELEASE'
+		springBootVersion = '2.1.1.RELEASE'
+//		springBootVersion = '1.5.10.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -25,9 +25,9 @@ repositories {
 }
 
 ////----------'2.1.1.RELEASE' ---------------////
-//bootRun {
-//	sourceResources sourceSets.main
-//}
+bootRun {
+	sourceResources sourceSets.main
+}
 
 ///---------- '1.5.10.RELEASE'---------------- ////
 //bootRun {

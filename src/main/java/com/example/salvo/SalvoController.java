@@ -36,27 +36,13 @@ public class SalvoController {
     GamePlayerRepository gamePlayerRepository;
     @Autowired
     PlayerRepository playerRepository;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @RequestMapping(path = "/players", method = RequestMethod.POST)
-    public ResponseEntity<Object> register(@RequestParam String email, @RequestParam String password) {
 
-        if ( email.isEmpty() || password.isEmpty()) {
-            return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
-        }
-
-        if (playerRepository.findByUserName(email) !=  null) {
-            return new ResponseEntity<>("Name already in use", HttpStatus.FORBIDDEN);
-        }
-
-        playerRepository.save(new Player(email, passwordEncoder.encode(password)));
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
 
     @RequestMapping("/games")
-    public Map<String,Object> games_view(){
+    public Map<String,Object> games_view(Authentication auth){
         Map<String,Object> gamesDTO = new HashMap<>();
         //repo.findAll() return a list of all instances in this repo
         gamesDTO.put("games",gameRepository.findAll()
@@ -66,6 +52,11 @@ public class SalvoController {
                     .stream()
                     .map(p -> makeLeaderboradDTO(p))
                     .collect(toList()));
+        if (auth != null) {
+            gamesDTO.put("currentUser", makePlayerDTO(getCurrentUser(auth)));
+        }else{
+            gamesDTO.put("currentUser", null);
+        }
         return gamesDTO;
 
     }
@@ -188,5 +179,21 @@ public class SalvoController {
     //Method to return null if no one is logged in, instead of anonymousUser
     private boolean isGuest(Authentication authentication) {
         return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+    }
+
+    @RequestMapping(path = "/players", method = RequestMethod.POST)
+    public ResponseEntity<Object> register(@RequestParam String userName, @RequestParam String password) {
+        //requestparam will have to match with the key in the Fetch function
+
+        if ( userName.isEmpty() || password.isEmpty()) {
+            return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
+        }
+
+        if (playerRepository.findByUserName(userName) !=  null) {
+            return new ResponseEntity<>("Username already exist", HttpStatus.FORBIDDEN);
+        }
+
+        playerRepository.save(new Player(userName, passwordEncoder.encode(password)));
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
