@@ -3,6 +3,8 @@ package com.example.salvo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.springframework.web.bind.annotation.*;
@@ -177,5 +179,14 @@ public class SalvoController {
             return salvoes.stream().map(salvo -> makeSalvoDTO(salvo))
                     .collect(toList());
 
+    }
+
+    private Player getCurrentUser(Authentication auth){
+        return playerRepository.findByUserName(auth.getName());
+    }
+
+    //Method to return null if no one is logged in, instead of anonymousUser
+    private boolean isGuest(Authentication authentication) {
+        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
     }
 }
