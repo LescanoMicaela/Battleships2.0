@@ -25,7 +25,7 @@ function makeList(games){
 function createListElements(item,list){
     let listElement = document.createElement("li");
     // console.log(item.gameplayers);
-    listElement.textContent =item.created +" _ " + getGamePlayers(item.gameplayers);
+    listElement.textContent =`${item.created} _  ${getGamePlayers(item.gameplayers)}`;
     list.appendChild(listElement);
 }
 
@@ -37,7 +37,7 @@ function getGamePlayers(gamePlayers){
     }else{
         player2 = "waiting for oponent";
         }
-        return player1 +" vs " + player2;
+        return `${player1} vs ${player2}`;
 }
 
 function createElement(el,parentEl){

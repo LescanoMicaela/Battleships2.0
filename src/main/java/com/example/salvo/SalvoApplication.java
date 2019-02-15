@@ -1,17 +1,43 @@
 package com.example.salvo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 
+///---------- '1.5.10.RELEASE'---------------- ////
+//import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+
+////----------'2.1.1.RELEASE' ---------------////
+import org.springframework.security.config.annotation.authentication.configuration.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.WebAttributes;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+
+
+
 
 @SpringBootApplication
 public class SalvoApplication {
+
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(SalvoApplication.class, args);
@@ -21,16 +47,22 @@ public class SalvoApplication {
 	// it will call them at startup up time, and save the instance for autowired injection.
 	// This is a way to get beans without annotating them as components.
 
+	//encrypt the passwords before storing them so hackers can have acces to them via REST
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+	}
+
 	@Bean
 	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository,
 									  GamePlayerRepository gpRepository,ShipRepository shipRepository,
 									  SalvoRepository salvoRepository,ScoreRepository scoreRepository) {
 		return (args) -> {
-			Player ObiWan = new Player("obi_wan@gmail.com");
-			Player Leia = new Player("leia@gmail.com");
-			Player Luke = new Player("luke_skywalker@gmail.com");
-			Player Han = new Player("Solo@gmail.com");
-			Player Chewie = new Player("chewie@gmail.com");
+			Player ObiWan = new Player("obi_wan@gmail.com","24");
+			Player Leia = new Player("leia@gmail.com","42");
+			Player Luke = new Player("luke_skywalker@gmail.com","90");
+			Player Han = new Player("Solo@gmail.com","60");
+			Player Chewie = new Player("chewie@gmail.com","90");
 
 			playerRepository.save(ObiWan);
 			playerRepository.save(Leia);
@@ -151,4 +183,101 @@ public class SalvoApplication {
 	}
 
 }
+
+//The job of this new class is to take the name someone has entered for log in,
+//search the database with that name, and return a UserDetails object with name, password, and role information for that user, if any.
+
+//@Configuration : creates a configuration bean. provides libraries for both authentication and authorization.
+//In this method  we create and return a org.springframework.security.core.userdetails.
+// //User object, with the stored user name, the stored password for that user, and the role or roles that user has.
+@Configuration
+class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
+// this is authentification who and roles
+	@Autowired
+	PlayerRepository playerRepository;
+
+	@Override
+	public void init(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(inputName-> {
+			Player player = playerRepository.findByUserName(inputName);
+			if (player != null) {
+				///---- REALEASE 1.5.10 WITH NO PASSWORD ENCODER--------
+//				return new User(player.getUserName(), player.getPassword(),
+//						AuthorityUtils.createAuthorityList("USER"));
+				///---realse 2.1.1 WITH PASSWORD ENCODER-----
+				User.withUsername(player.getUserName()).password("{noop}"+player.getPassword()).roles("USER").build();
+
+			} else {
+				throw new UsernameNotFoundException("Unknown user: " + inputName);
+			}
+		});
+	}
+}
+
+
+//this is authorization
+//what can users do
+@Configuration
+@EnableWebSecurity
+class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+				.antMatchers("/web/games.html").permitAll()
+				.antMatchers("web/scripts/games.js").permitAll()
+				.antMatchers("web/style/gameStyle.css").permitAll()
+				.antMatchers("/api/games").permitAll()
+				.antMatchers("/rest/**").denyAll()
+				.antMatchers("/**").hasAuthority("USER")
+
+				// sames as : hasAuthority("ROLE_USER")
+				.and()
+				.formLogin()
+				.usernameParameter("userName")
+				.passwordParameter("password")
+				.loginPage("/api/login");
+
+		http.logout().logoutUrl("/api/logout");
+
+
+
+
+		// turn off checking for CSRF tokens
+		http.csrf().disable();
+
+
+		//form-based login configured to avoid sending any HTML to the browser.
+		// settings that need to change are:
+
+		//Only send an HTTP "unauthorized" response when an unauthenticated user tries to access a protected URL.
+		//Only send an HTTP "success" response after a successful POST to the login URL.
+		//Only send an HTTP "unauthorized" response when login is not successful.
+		//Only send an HTTP "success" response  when the user logs out.
+
+		// if user is not authenticated, just send an authentication failure response
+		http.exceptionHandling().authenticationEntryPoint((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
+
+		// if login is successful, just clear the flags asking for authentication
+		http.formLogin().successHandler((req, res, auth) -> clearAuthenticationAttributes(req));
+
+		// if login fails, just send an authentication failure response
+		http.formLogin().failureHandler((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
+
+		// if logout is successful, just send a success response
+		http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
+	}
+
+
+	private void clearAuthenticationAttributes(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		}
+	}
+}
+
+
+
+
+
 

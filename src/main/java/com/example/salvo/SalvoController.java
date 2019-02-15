@@ -1,11 +1,11 @@
 package com.example.salvo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.LinkedCaseInsensitiveMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,6 +35,24 @@ public class SalvoController {
     @Autowired
     PlayerRepository playerRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @RequestMapping(path = "/players", method = RequestMethod.POST)
+    public ResponseEntity<Object> register(@RequestParam String email, @RequestParam String password) {
+
+        if ( email.isEmpty() || password.isEmpty()) {
+            return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
+        }
+
+        if (playerRepository.findByUserName(email) !=  null) {
+            return new ResponseEntity<>("Name already in use", HttpStatus.FORBIDDEN);
+        }
+
+        playerRepository.save(new Player(email, passwordEncoder.encode(password)));
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
     @RequestMapping("/games")
     public Map<String,Object> games_view(){
         Map<String,Object> gamesDTO = new HashMap<>();
@@ -57,26 +75,9 @@ public class SalvoController {
         gameDTO.put("gameplayers",game.getGamePlayers().stream()
                                         .map(gp -> makeGamePlayerDTO(gp))
                                         .collect(toList()));
-//        if (game.getScores().size() != 0){
-//            gameDTO.put("scores",game.getGamePlayers().stream()
-//                                                        .map(gp -> makeScoreDTO(gp.getScore()))
-//                                                        .collect(toList()));
-//        }
         return gameDTO;
     }
 
-    //Map of scores for each game
-//    public Map<String,Object> makeScoreDTO(Score score){
-//        Map<String,Object> dto = new HashMap<>();
-//        if (score !=null) {
-//            dto.put("score", score.getScore());
-//            dto.put("player", score.getPlayer().getUserName());
-//            dto.put("status", getScoreStatus(score.getScore()));
-//        }else{
-//            dto.put("score",null);
-//        }
-//        return dto;
-//    }
 
     public String getScoreStatus(Double score){
         String scoreStatus ="";
@@ -89,7 +90,6 @@ public class SalvoController {
         }
         return scoreStatus;
     }
-
 
 
     public Map<String,Double> countPlayerScores(Set<Score> scores){
@@ -132,10 +132,15 @@ public class SalvoController {
     }
 
     //This method will create a JSON to create a game view.
-    //The @RequestParam annotation says that the URL will include ?id=value
+    // The @RequestParam annotation says that the URL will include ?id=value
+
     @RequestMapping("/game_view/{id}")
     public Map<String, Object> game_view(@PathVariable Long id){
-        GamePlayer gamePlayer = gamePlayerRepository.findOne(id);
+        ///---------- '1.5.10.RELEASE'---------------- ////
+//        GamePlayer gamePlayer = gamePlayerRepository.findOne(id);
+
+        ////----------'2.1.1.RELEASE' ---------------////
+        GamePlayer gamePlayer = gamePlayerRepository.findById(id).orElse(null);
         Game game = gamePlayer.getGame();
         Set<GamePlayer> gamePlayerSet = game.getGamePlayers();
         Map<String,Object> dto = new LinkedHashMap<>();

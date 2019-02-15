@@ -24,6 +24,7 @@ import static java.util.stream.Collectors.toList;
         @GenericGenerator(name = "native", strategy = "native")
         private long id;
         private String userName;
+        private String password;
 
         @OneToMany(mappedBy = "player", fetch=FetchType.EAGER)
         Set<GamePlayer> gamePlayers = new HashSet<>();
@@ -34,8 +35,9 @@ import static java.util.stream.Collectors.toList;
         //That's what JPA will call to create new instances
         public Player() { }
 
-        public Player(String userName) {
+        public Player(String userName, String password) {
             this.userName = userName;
+            this.password = password;
         }
 
         public long getId() {
@@ -84,5 +86,13 @@ import static java.util.stream.Collectors.toList;
         public Score getScore(Game game){
             return this.getScores().stream().filter(s -> s.getGame().equals(game)).findFirst().orElse(null);
         }
+
+    public String getPassword() {
+        return password;
     }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}
 

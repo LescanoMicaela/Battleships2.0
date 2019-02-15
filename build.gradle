@@ -24,14 +24,15 @@ repositories {
 	mavenCentral()
 }
 
-//para la versión nueva 2.0.0
+////----------'2.1.1.RELEASE' ---------------////
 //bootRun {
 //	sourceResources sourceSets.main
 //}
 
-bootRun {
-	addResources = true
-}
+///---------- '1.5.10.RELEASE'---------------- ////
+//bootRun {
+//	addResources = true
+//}
 
 
 dependencies {
@@ -40,4 +41,6 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	runtimeOnly('com.h2database:h2')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	compile("org.springframework.boot:spring-boot-starter-security")
+
 }
