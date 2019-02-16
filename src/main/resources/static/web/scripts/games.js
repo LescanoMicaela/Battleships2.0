@@ -1,6 +1,13 @@
 const url = "/api/games";
 const divList = document.getElementById("divList");
 const divLeaderboard = document.getElementById("leaderBoard");
+const loggedScreen = document.getElementById("loggedScreen");
+const loggedOffScreen = document.getElementById("loggedOff");
+const welcomeText = document.getElementById("welcome");
+const signUpBtn = document.getElementById("signUpBtn");
+const signUpBtns = document.getElementById("signupbtns");
+const logInBtn = document.getElementById("logInBtn");
+const logInBtns = document.getElementById("loginbtns");
 
 
 const getData = (url) => fetch(url);
@@ -11,7 +18,8 @@ getData(url).
     then(result => {
         console.log(result)
         makeList(result.games)
-    createLeaderBoard(result.leaderboard)}).
+        createLeaderBoard(result.leaderboard)
+        changeDisplay(result)}).
     catch(error => console.log(error));
 
 
@@ -91,8 +99,91 @@ function createLeaderBoardHeader(table){
     total.textContent = "total";
 }
 
-const modal = document.getElementById('id01');
+// const modal = document.getElementById('id01');
 
 // When the user clicks anywhere outside of the modal, close it
-modal.onclick = modal.style.display = "none";
+// modal.onclick = modal.style.display = "none";
 
+function login(){
+    // event.preventDefault();
+    let username = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+    console.log(username)
+    console.log(password)
+
+    fetch("/api/login", {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        method: 'POST',
+        body: 'userName='+ username + '&password='+ password,
+    })
+        .then(function (data) {
+            console.log('Request success: ', data);
+            window.location.reload();
+
+
+        }).then(function () {
+
+    })
+        .catch(function (error) {
+            console.log('Request failure: ', error);
+        });
+}
+
+function changeDisplay(data){
+    (data.currentUser ? (loggedScreen.style.display = 'block', loggedOffScreen.style.display = 'none', welcomeMessage(data)) : (loggedScreen.style.display = 'none', loggedOffScreen.style.display = 'block'));
+
+}
+
+let welcomeMessage = (data) => welcomeText.textContent =`Welcome ${data.currentUser.email.split("@")[0]}`;
+
+function loginOrSignup(){
+    console.log("hi");
+    ( logInBtn.style.display != 'none' ? (logInBtn.style.display = 'none', logInBtns.style.display = 'none', signUpBtn.style.display ='block', signUpBtns.style.display ='block' ) : (logInBtn.style.display = 'block', signUpBtn.style.display ='none',logInBtns.style.display = 'block', signUpBtns.style.display ='none') )
+
+}
+
+function signUp(){
+    // event.preventDefault();
+    let username = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+    fetch("/api/players", {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        method: 'POST',
+        body: 'userName='+username+'&password='+password,
+    })
+        .then(function (data) {
+            console.log('Request success: ', data.status);
+
+        }).then(function () {
+            login()
+    })
+        .catch(function (error) {
+            console.log('Request failure: ', error);
+        });
+}
+
+function logOut(){
+    fetch("/api/logout", {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        method: 'POST',
+    })
+        .then(function (data) {
+            console.log('Request success: ', data);
+            // window.location.reload();
+
+
+        })
+        .catch(function (error) {
+            console.log('Request failure: ', error);
+        });
+
+}

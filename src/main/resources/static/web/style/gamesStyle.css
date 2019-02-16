@@ -107,3 +107,15 @@ span.psw {
         width: 100%;
     }
 }
+
+#loggedScreen,#signupbtns,#signUpBtn{
+    display: none;
+}
+
+.link{
+    text-decoration: underline;
+    text-align: center;
+    font-weight: 800;
+    margin: 1%;
+    color: blue;
+}

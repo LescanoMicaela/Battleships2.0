@@ -48,10 +48,8 @@ public class SalvoApplication {
 	// This is a way to get beans without annotating them as components.
 
 	//encrypt the passwords before storing them so hackers can have acces to them via REST
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-	}
+
+
 
 	@Bean
 	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository,
@@ -195,18 +193,20 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 // this is authentification who and roles
 	@Autowired
 	PlayerRepository playerRepository;
+	//encrypt the passwords before storing them so hackers can have acces to them via REST
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+	}
 
 	@Override
 	public void init(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(inputName-> {
 			Player player = playerRepository.findByUserName(inputName);
 			if (player != null) {
-				///---- REALEASE 1.5.10 WITH NO PASSWORD ENCODER--------
-//				return new User(player.getUserName(), player.getPassword(),
-//						AuthorityUtils.createAuthorityList("USER"));
-				///---realse 2.1.1 WITH PASSWORD ENCODER-----
-				return User.withUsername(player.getUserName()).password("{noop}"+player.getPassword()).roles("USER").build();
-
+//				///---- REALEASE 1.5.10 WITH NO PASSWORD ENCODER--------
+				return new User(player.getUserName(), player.getPassword(),
+						AuthorityUtils.createAuthorityList("USER"));
 			} else {
 				throw new UsernameNotFoundException("Unknown user: " + inputName);
 			}
@@ -229,7 +229,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/web/images/**").permitAll()
 				.antMatchers("/api/games").permitAll()
 				.antMatchers("/api/players").permitAll()
-				.antMatchers("/rest/**").denyAll()
+				.antMatchers("/rest/**").permitAll()
 //				.antMatchers("/**").hasAuthority("USER")
 				 .antMatchers("/**").hasAuthority("ROLE_USER")
 				.and()

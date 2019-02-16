@@ -6,13 +6,12 @@
     <link href="style/gamesStyle.css" rel="stylesheet"></link>
 </head>
 <body>
-<h2>Modal Login Form</h2>
-
+<div id="loggedOff">
 <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button>
 
 <div id="id01" class="modal">
 
-    <form class="modal-content animate" action="/action_page.php">
+    <form class="modal-content animate" onsubmit="return false" >
         <div class="imgcontainer">
             <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
             <img src="images/login.png" alt="Avatar" class="avatar">
@@ -20,28 +19,48 @@
 
         <div class="container">
             <label for="userName"><b>Username</b></label>
-            <input type="text" placeholder="Enter Username" name="uname" required>
+            <input id="email" type="text" placeholder="Enter Username" name="uname" >
 
             <label for="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="psw" required>
+            <input id="password" type="password" placeholder="Enter Password" name="psw" >
 
-            <button type="submit">Login</button>
-            <label>
-                <input type="checkbox" checked="checked" name="remember"> Remember me
-            </label>
+            <button id='logInBtn' onclick="login()" >Login</button>
+            <button id='signUpBtn' onclick="signUp()" >Sign Up</button>
+            <!--<label>-->
+                <!--<input type="checkbox" checked="checked" name="remember"> Remember me-->
+            <!--</label>-->
         </div>
 
-        <div class="container" style="background-color:#f1f1f1">
+        <div  id='loginbtns' class="container" style="background-color:#f1f1f1">
             <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
-            <span class="psw">Forgot <a href="#">password?</a></span>
+            <span class="psw">First time here? <p class="link" onclick="loginOrSignup()">Sign up</p></span>
         </div>
+
+        <!--<label>-->
+        <!--<input type="checkbox" checked="checked" name="remember"> Remember me-->
+        <!--</label>-->
+
+    <div id='signupbtns' class="container" style="background-color:#f1f1f1">
+        <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+        <span class="psw">Already have an account? <p class="link" onclick="loginOrSignup()">Log in</p></span>
+    </div>
     </form>
 </div>
 
-<h1>Games</h1>
 
-<div id="divList"></div>
-<div id="leaderBoard"></div>
+
+</div>
+
+<div id="loggedScreen">
+    <h1 id="welcome"></h1>
+    <button onclick="logOut()" >Log out</button>
+
+    <h1>Games</h1>
+
+    <div id="divList"></div>
+    <div id="leaderBoard"></div>
+</div>
+
 
 
 <script src="scripts/games.js"></script>
