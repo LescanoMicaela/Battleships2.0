@@ -106,10 +106,27 @@ function createLeaderBoardHeader(table){
 
 function login(){
     // event.preventDefault();
-    let username = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
-    console.log(username)
-    console.log(password)
+    const username = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    // cant make JSON.stringify with encoded password.
+//     fetch("/api/login", {
+//         credentials: 'include',
+//         headers: {
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json',
+//         },
+//         method: 'POST',
+//         body: JSON.stringify({userName: username, password : password}),
+//     })
+//         .then(r => {
+//         if (r.status == 200) {
+//         window.location.reload()
+//     } else {
+//         console.log("Username or Password are wrong");
+//     }
+// })
+// .catch(e => console.log(e))
 
     fetch("/api/login", {
         credentials: 'include',
@@ -121,12 +138,8 @@ function login(){
     })
         .then(function (data) {
             console.log('Request success: ', data);
-            window.location.reload();
-
-
-        }).then(function () {
-
-    })
+            location.reload();
+        })
         .catch(function (error) {
             console.log('Request failure: ', error);
         });
@@ -147,28 +160,52 @@ function loginOrSignup(){
 
 function signUp(){
     // event.preventDefault();
-    let username = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
+    const username = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
+    console.log(username,pass)
     fetch("/api/players", {
         credentials: 'include',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
         },
         method: 'POST',
-        body: 'userName='+username+'&password='+password,
+        body: JSON.stringify({userName: username, password: pass}),
     })
-        .then(function (data) {
-            console.log('Request success: ', data.status);
-
-        }).then(function () {
-            login()
-    })
+        .then(function (response) {
+            if (response.status == 201){
+                login();
+                return response;
+            }else{
+                console.log(response.status)
+            }
+        })
         .catch(function (error) {
-            console.log('Request failure: ', error);
+            console.log('Request failure: ', error.message);
         });
 }
 
 function logOut(){
+    //Can't make it work with json type
+    // fetch("/api/logout", {
+    //     credentials: 'include',
+    //     headers: {
+    //         'Accept': 'application/json',
+    //         'Content-Type': 'application/json'
+    //     },
+    //     method: 'POST',
+    // })
+    //     .then(function (response) {
+    //         if (response.ok){
+    //             return response.json();
+    //         }
+    //     }).then(function () {
+    //     console.log("this should be just for succes")
+    //     window.location.reload();
+    // })
+    //     .catch(function (error) {
+    //         console.log('Request failure: ', error.message);
+    //     });
     fetch("/api/logout", {
         credentials: 'include',
         headers: {
@@ -178,8 +215,7 @@ function logOut(){
     })
         .then(function (data) {
             console.log('Request success: ', data);
-            // window.location.reload();
-
+            window.location.reload();
 
         })
         .catch(function (error) {

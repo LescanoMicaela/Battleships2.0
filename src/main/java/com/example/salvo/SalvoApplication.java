@@ -54,13 +54,13 @@ public class SalvoApplication {
 	@Bean
 	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository,
 									  GamePlayerRepository gpRepository,ShipRepository shipRepository,
-									  SalvoRepository salvoRepository,ScoreRepository scoreRepository) {
+									  SalvoRepository salvoRepository,ScoreRepository scoreRepository, PasswordEncoder passwordEncoder) {
 		return (args) -> {
-			Player ObiWan = new Player("obi_wan@gmail.com","24");
-			Player Leia = new Player("leia@gmail.com","42");
-			Player Luke = new Player("luke_skywalker@gmail.com","90");
-			Player Han = new Player("Solo@gmail.com","60");
-			Player Chewie = new Player("chewie@gmail.com","90");
+			Player ObiWan = new Player("obi_wan@gmail.com",passwordEncoder.encode("24"));
+			Player Leia = new Player("leia@gmail.com",passwordEncoder.encode("42"));
+			Player Luke = new Player("luke_skywalker@gmail.com",passwordEncoder.encode("90"));
+			Player Han = new Player("Solo@gmail.com",passwordEncoder.encode("60"));
+			Player Chewie = new Player("chewie@gmail.com",passwordEncoder.encode("90"));
 
 			playerRepository.save(ObiWan);
 			playerRepository.save(Leia);
@@ -201,12 +201,22 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
 	@Override
 	public void init(AuthenticationManagerBuilder auth) throws Exception {
+//		auth.inMemoryAuthentication()
+//				.withUser("user1").password(passwordEncoder().encode("user1Pass")).roles("USER");
 		auth.userDetailsService(inputName-> {
 			Player player = playerRepository.findByUserName(inputName);
 			if (player != null) {
 //				///---- REALEASE 1.5.10 WITH NO PASSWORD ENCODER--------
 				return new User(player.getUserName(), player.getPassword(),
 						AuthorityUtils.createAuthorityList("USER"));
+//				///---realse 2.1.1 WITH PASSWORD ENCODER-----
+//				if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+//					throw new BadCredentialsException("Bad password");
+//////				}
+//				return User.withUsername(player.getUserName()).password(passwordEncoder().encode(player.getPassword())).roles("USER").build();
+//				return new User(player.getUserName(), passwordEncoder().encode(player.getPassword()),
+//						AuthorityUtils.createAuthorityList("USER"));
+
 			} else {
 				throw new UsernameNotFoundException("Unknown user: " + inputName);
 			}

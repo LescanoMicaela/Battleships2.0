@@ -36,10 +36,26 @@ public class SalvoController {
     GamePlayerRepository gamePlayerRepository;
     @Autowired
     PlayerRepository playerRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @RequestMapping(path = "/players", method = RequestMethod.POST)
+    public ResponseEntity<Object> register(@RequestBody Player player) {
 
+        System.out.println(player.getUserName());
+        System.out.println(player.getPassword());
+        if ( player.getUserName().isEmpty() || player.getPassword().isEmpty()) {
+            return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
+        }
+
+        if (playerRepository.findByUserName(player.getUserName()) !=  null) {
+            return new ResponseEntity<>("Name already in use", HttpStatus.FORBIDDEN);
+        }
+
+        playerRepository.save(new Player(player.getUserName(), passwordEncoder.encode(player.getPassword())));
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
 
     @RequestMapping("/games")
     public Map<String,Object> games_view(Authentication auth){
@@ -179,21 +195,5 @@ public class SalvoController {
     //Method to return null if no one is logged in, instead of anonymousUser
     private boolean isGuest(Authentication authentication) {
         return authentication == null || authentication instanceof AnonymousAuthenticationToken;
-    }
-
-    @RequestMapping(path = "/players", method = RequestMethod.POST)
-    public ResponseEntity<Object> register(@RequestParam String userName, @RequestParam String password) {
-        //requestparam will have to match with the key in the Fetch function
-
-        if ( userName.isEmpty() || password.isEmpty()) {
-            return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
-        }
-
-        if (playerRepository.findByUserName(userName) !=  null) {
-            return new ResponseEntity<>("Username already exist", HttpStatus.FORBIDDEN);
-        }
-
-        playerRepository.save(new Player(userName, passwordEncoder.encode(password)));
-        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
