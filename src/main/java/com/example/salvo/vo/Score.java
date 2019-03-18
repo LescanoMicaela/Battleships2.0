@@ -1,5 +1,7 @@
-package com.example.salvo;
+package com.example.salvo.vo;
 
+import com.example.salvo.vo.Game;
+import com.example.salvo.vo.Player;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;

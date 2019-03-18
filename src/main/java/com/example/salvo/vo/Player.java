@@ -1,4 +1,4 @@
-package com.example.salvo;
+package com.example.salvo.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
