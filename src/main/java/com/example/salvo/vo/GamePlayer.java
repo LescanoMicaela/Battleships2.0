@@ -1,6 +1,7 @@
 package com.example.salvo.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.Date;
@@ -9,6 +10,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 public class GamePlayer {
 
     @Id
@@ -32,11 +36,6 @@ public class GamePlayer {
     @OneToMany(mappedBy="gamePlayer", fetch = FetchType.EAGER)
     Set<Salvo> salvoes = new HashSet<>();
 
-
-    public GamePlayer(){
-
-    }
-
     public GamePlayer(Player player, Game game){
         this.player = player;
         this.game = game;
@@ -48,30 +47,9 @@ public class GamePlayer {
         return this.player;
     }
 
-    public void setPlayer(Player player){
-        this.player = player;
-    }
-
-
-    public long getId(){
-        return this.id;
-    }
     @JsonIgnore
     public Game getGame(){
         return this.game;
-    }
-
-    public void setGame(Game game){
-        this.game = game;
-    }
-
-
-    public Date getDate(){
-        return this.date;
-    }
-
-    public void setDate(Date date){
-        this.date = date;
     }
 
     @JsonIgnore
@@ -79,32 +57,15 @@ public class GamePlayer {
         return ships;
     }
 
-    public void setShips(Set<Ship> ships) {
-        this.ships = ships;
-    }
-
     public void addShip(Ship ship){
         ship.setGamePlayer(this);
         this.ships.add(ship);
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     @JsonIgnore
     public Set<Salvo> getSalvoes() {
         return salvoes;
     }
-
-    public void setSalvoes(Set<Salvo> salvoes) {
-        this.salvoes = salvoes;
-    }
-
-//    public Score getScore(){
-//        return this.getPlayer().getScores().stream().filter(s -> s.getGame().equals(this.getGame())).findFirst().orElse(null);
-//
-//    }
 
     @JsonIgnore
     public Score getScore() {

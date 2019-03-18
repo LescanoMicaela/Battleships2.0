@@ -1,7 +1,6 @@
 package com.example.salvo.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +12,8 @@ import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Game {
 
     @Id
