@@ -233,6 +233,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
+//				.antMatchers("/**").permitAll()
 				.antMatchers("/web/games.html").permitAll()
 				.antMatchers("/web/scripts/**").permitAll()
 				.antMatchers("/web/style/**").permitAll()
