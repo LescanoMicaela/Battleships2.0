@@ -1,10 +1,9 @@
-package com.example.salvo;
+package com.example.salvo.repositories;
 
+import com.example.salvo.vo.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-
-import java.util.List;
 
 
 //@RepositoryRestResource turns PersonRepository into a Rest Repository. Spring Boot looks for public getters

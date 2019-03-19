@@ -1,5 +1,9 @@
-package com.example.salvo;
+package com.example.salvo.vo;
 
+import com.example.salvo.vo.GamePlayer;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -7,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 public class Salvo {
 
     @Id
@@ -24,43 +31,10 @@ public class Salvo {
     @Column(name="salvoLocation")
     List<String> salvoLocation = new ArrayList<>();
 
-    public Salvo(){}
-
     public Salvo(GamePlayer gamePlayer, Integer turn, List<String> salvoLocation) {
         this.gamePlayer = gamePlayer;
         this.turn = turn;
         this.salvoLocation = salvoLocation;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public GamePlayer getGamePlayer() {
-        return gamePlayer;
-    }
-
-    public void setGamePlayer(GamePlayer gamePlayer) {
-        this.gamePlayer = gamePlayer;
-    }
-
-    public Integer getTurn() {
-        return turn;
-    }
-
-    public void setTurn(Integer turn) {
-        this.turn = turn;
-    }
-
-    public List<String> getSalvoLocation() {
-        return salvoLocation;
-    }
-
-    public void setSalvoLocation(List<String> salvoLocation) {
-        this.salvoLocation = salvoLocation;
-    }
 }

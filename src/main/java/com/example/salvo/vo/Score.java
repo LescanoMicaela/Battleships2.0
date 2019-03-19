@@ -1,11 +1,17 @@
-package com.example.salvo;
+package com.example.salvo.vo;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 public class Score {
 
     @Id
@@ -20,12 +26,8 @@ public class Score {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="game_id")
     private Game game;
-
     private Double score;
-
     private Date finishDate;
-
-    public Score(){ }
 
     public Score(Double score,Game game, Player player){
         this.score = score;
@@ -34,35 +36,4 @@ public class Score {
         this.finishDate = new Date();
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
-    public Double getScore() {
-        return score;
-    }
-
-    public void setScore(Double score) {
-        this.score = score;
-    }
 }
